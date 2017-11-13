@@ -9,4 +9,5 @@
     <string name="a_fragment">Hello A fragment</string>
     <string name="b_fragment">Hello B fragment</string>
     <string name="c_fragment">Hello C fragment</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

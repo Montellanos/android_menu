@@ -4,12 +4,19 @@
     android:layout_height="match_parent"
     tools:context="com.factorybyte.appbartoolbarcasero.Fragments.AFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <GridView
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/gridA"
-        android:numColumns="1"/>
+        android:id="@+id/recyclerA" />
 
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:id="@+id/loading"
+        android:layout_centerHorizontal="true"
+        android:progressDrawable="@drawable/circular"
+        android:layout_marginTop="80dp"
+        />
 
 </FrameLayout>
