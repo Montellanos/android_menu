@@ -1,6 +1,7 @@
 package com.factorybyte.appbartoolbarcasero.Fragments;
 
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -20,8 +21,20 @@ import com.factorybyte.appbartoolbarcasero.Adapters.CardViewAdapter;
 import com.factorybyte.appbartoolbarcasero.Models.Card;
 import com.factorybyte.appbartoolbarcasero.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,6 +50,9 @@ public class AFragment extends Fragment implements SearchView.OnQueryTextListene
 
 
     List<Card> cardList =  new ArrayList<>();
+
+
+    public String url_api = "https://api.androidhive.info/contacts/";
 
     public AFragment() {
         // Required empty public constructor
@@ -57,14 +73,11 @@ public class AFragment extends Fragment implements SearchView.OnQueryTextListene
 
         loading = (ProgressBar) viewRoot.findViewById(R.id.loading);
 
-        cardList.add(new Card("http://mty360.net/wp-content/uploads/2017/04/flor-cassi.jpg", "mi primier dato", "mi descripcion", "+591 75116755" , 1,0));
-        cardList.add(new Card("https://www.laguiadelvaron.com/wp-content/uploads/2015/12/1597556_1502240563436303_1138651251_n.jpg", "mi segundo dato", "mi segunda descripcion", "+591 75116754" , 1,0));
 
-        loading.setVisibility(View.GONE);
+        new DownloadRawData().execute(url_api);
 
-        CardViewAdapter adapter =  new CardViewAdapter(this.getContext(), cardList);
 
-        recyclerView.setAdapter(adapter);
+
 
         return viewRoot;
     }
@@ -81,13 +94,78 @@ public class AFragment extends Fragment implements SearchView.OnQueryTextListene
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        Log.d("texto", "onQueryTextSubmit: " + query);
+
+        String url_buscar = "https://api.androidhive.info/contacts/" +"?buscar="+ query;
+        new DownloadRawData().execute(url_api);
+
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
-
+        Log.d("data", "entra");
+        recyclerView.setAdapter(null);
+        loading.setVisibility(View.VISIBLE);
         return false;
     }
+
+
+    private class DownloadRawData extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String link = params[0];
+            try {
+                URL url = new URL(link);
+                InputStream is = url.openConnection().getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+
+                return buffer.toString();
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String res) {
+            try {
+                parseJSon(res);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void parseJSon(String data) throws JSONException {
+        if (data == null)
+            return;
+
+        JSONObject jsonData = new JSONObject(data);
+
+
+        JSONArray jsonContacts = jsonData.getJSONArray("contacts");
+        for (int i = 0; i < jsonContacts.length(); i++) {
+            JSONObject jsonContact = jsonContacts.getJSONObject(i);
+            Card card = new Card("url", jsonContact.getString("name"), "des", "75116755", 1,2);
+            cardList.add(card);
+        }
+
+        loading.setVisibility(View.GONE);
+
+        CardViewAdapter adapter =  new CardViewAdapter(this.getContext(), cardList);
+
+        recyclerView.setAdapter(adapter);
+
+    }
+
 }

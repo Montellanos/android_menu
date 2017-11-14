@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -16,6 +17,8 @@ import com.factorybyte.appbartoolbarcasero.Adapters.TabsFragmentAdapter;
 import com.factorybyte.appbartoolbarcasero.Fragments.AFragment;
 import com.factorybyte.appbartoolbarcasero.Fragments.BFragment;
 import com.factorybyte.appbartoolbarcasero.Fragments.CFragment;
+
+import java.io.UnsupportedEncodingException;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -46,7 +49,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
 
         tabs.setupWithViewPager(viewPager);
-        
+
+
 
 
     }
